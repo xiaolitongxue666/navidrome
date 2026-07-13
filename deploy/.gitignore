@@ -11,3 +11,6 @@ scripts/cdp-c*.json
 
 # Navidrome / 本地缓存
 .cache/
+
+# 项目记忆备份
+.project-memory-backups/

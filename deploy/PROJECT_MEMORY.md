@@ -33,12 +33,26 @@
 - `scripts/sync-latest1000-to-vps.py`：仅清单内已有 MP3；同步前 `df -h`（<3GB 中止）。
 - **勿** `scp *.mp3` 全量、**勿** `--delete`（保留 SoundHelix 测试曲）。
 
+## 状态 (2026-07-13)
+
+- **latest1000 下载**: 全部 1000 首已尝试 ✅
+  - ok/skipped: 636 首
+  - failed: 82 首（无源/VIP）
+  - preview_only: 282 首（试听片段）
+  - pending: 0
+  - 本地 MP3: 710 个 (`deploy/music/liked/`)
+- **VPS 同步**: 已完成 ✅
+  - VPS `/home/ubuntu/music/liked/`: 656 首 / 5.9GB
+- **待办**: failed/preview 需 LX Music 换源补下
+
 ## 问题与解法
 
 | 问题 | 解法 |
 |------|------|
 | Windows 控制台 `UnicodeEncodeError` | `download-batch.py` 用 `safe_print`；`PYTHONIOENCODING=utf-8` |
 | `INVALID_CHARS` NameError | 已修复；续跑前确认脚本含 `INVALID_CHARS = re.compile(...)` |
+| `PermissionError` 删除锁定临时文件 | 加 try/except 跳过 |
+| manifest ID 为 `str` 而 status ID 为 `int` | 统一转 `int` 比较 |
 | bash sync 路径乱码 | 改用 `sync-latest1000-to-vps.py` |
 | navidrome 目录 `cd` 触发 nvm v24 错误 | 用 `git -C ...` 绕过 |
 

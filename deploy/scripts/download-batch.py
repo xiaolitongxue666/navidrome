@@ -99,7 +99,10 @@ def download_one(song: dict, target: str, dry_run: bool) -> str:
     src = candidates[0]
     size = src.stat().st_size
     if size < 500_000:
-        src.unlink(missing_ok=True)
+        try:
+            src.unlink(missing_ok=True)
+        except PermissionError:
+            safe_print(f"  [warn] cannot delete locked temp file: {src.name}")
         log_status(
             {
                 "id": song["id"],
