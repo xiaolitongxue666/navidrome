@@ -9,7 +9,7 @@
 | 项 | 要求 |
 |----|------|
 | **格式** | 曲库统一 **MP3**（`libmp3lame`，建议 `-b:a 192k`）；B站 M4A 等须 ffmpeg 转 MP3 |
-| **标签** | ID3v2.4 **UTF-8**：`TIT2` 歌名、`TPE1` 歌手、`TALB` 专辑（无专辑用「单曲」或歌手名） |
+| **标签** | ID3v2.4 **UTF-8**：`TIT2` 歌名、`TPE1` 歌手、`TALB` 专辑（网易云原始专辑名）、`TPE2` 专辑艺人（必填）；**禁止** `TCMP=1`（避免 Various Artists 合集） |
 | **封面** | 嵌入 **APIC**（JPEG/PNG）；来源优先 manifest `albumPicUrl`，其次 yt-dlp thumbnail |
 | **文件名** | `歌手 - 歌名.mp3`；非法字符 `/\|?*` 等替换为 `_`，最长 200 字符 |
 | **清单** | 下载前/后对照 `playlist-enriched.json`（`enrich-manifest.py` 生成） |

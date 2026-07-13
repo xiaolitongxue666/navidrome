@@ -10,13 +10,16 @@ from pathlib import Path
 DEPLOY = Path(__file__).resolve().parent.parent
 LOCAL_DIR = DEPLOY / "music" / "liked"
 REMOTE = "ubuntu@xiaolitongxue.com.cn:/home/ubuntu/music/liked/"
+REMOTE_HOST = "ubuntu@xiaolitongxue.com.cn"
 MIN_FREE_GB = 3
 MIN_SIZE = 500_000
+SSH_IDENTITY = Path.home() / ".ssh" / "id_ed25519"
+SSH_BASE = ["-i", str(SSH_IDENTITY), "-o", "IdentitiesOnly=yes", "-o", "StrictHostKeyChecking=accept-new"]
 
 
 def ssh(cmd: str) -> str:
     r = subprocess.run(
-        ["ssh", "ubuntu@xiaolitongxue.com.cn", cmd],
+        ["ssh", *SSH_BASE, REMOTE_HOST, cmd],
         capture_output=True,
         text=True,
         check=True,
@@ -57,7 +60,7 @@ def main() -> int:
         if args.dry_run:
             print(f"scp [{i}/{len(mp3s)}] {p.name}")
             continue
-        subprocess.run(["scp", str(p), dest], check=True)
+        subprocess.run(["scp", *SSH_BASE, str(p), dest], check=True)
         if i % 10 == 0 or i == len(mp3s):
             print(f"  synced {i}/{len(mp3s)}: {p.name}", flush=True)
 

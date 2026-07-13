@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Enrich playlist manifest with albumName/albumPicUrl from NetEase song/detail API."""
+"""Enrich playlist manifest with albumName/albumPicUrl/albumArtist from NetEase song/detail API."""
 from __future__ import annotations
 
 import argparse
@@ -25,6 +25,12 @@ def safe_print(msg: str) -> None:
         sys.stdout.buffer.write((msg + "\n").encode("utf-8", errors="replace"))
 
 
+def primary_artist(artists: list) -> str:
+    if not artists:
+        return ""
+    return (artists[0].get("name") or "").strip()
+
+
 def fetch_batch(ids: list[str]) -> dict[str, dict]:
     url = API_URL.format(ids=",".join(ids))
     req = urllib.request.Request(
@@ -37,17 +43,24 @@ def fetch_batch(ids: list[str]) -> dict[str, dict]:
     for s in data.get("songs") or []:
         sid = str(s["id"])
         album = s.get("album") or s.get("al") or {}
+        artists = s.get("artists") or s.get("ar") or []
+        album_artist = primary_artist(artists)
         out[sid] = {
             "albumName": album.get("name") or "",
             "albumPicUrl": album.get("picUrl") or "",
+            "albumArtist": album_artist,
         }
     return out
 
 
-def needs_enrich(song: dict) -> bool:
+def needs_enrich(song: dict, *, force: bool = False) -> bool:
+    if force:
+        return True
     if not (song.get("albumName") or song.get("album")):
         return True
     if not (song.get("albumPicUrl") or song.get("picUrl")):
+        return True
+    if not song.get("albumArtist"):
         return True
     return False
 
@@ -59,6 +72,7 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     parser.add_argument("--delay", type=float, default=0.12, help="seconds between API batches")
     parser.add_argument("--only-ids", type=Path, help="JSON file with id list to enrich (subset)")
+    parser.add_argument("--force", action="store_true", help="re-fetch even when album fields exist")
     args = parser.parse_args()
 
     in_path = args.input if args.input.is_absolute() else DEPLOY / args.input
@@ -75,7 +89,8 @@ def main() -> int:
     songs = manifest.get("songs") or []
     target_ids: set[str] | None = None
     if args.only_ids:
-        with open(args.only_ids, encoding="utf-8") as f:
+        only_path = args.only_ids if args.only_ids.is_absolute() else DEPLOY / args.only_ids
+        with open(only_path, encoding="utf-8") as f:
             meta = json.load(f)
         raw = meta.get("trackIds") or meta.get("ids") or meta.get("songs") or meta
         if raw and isinstance(raw[0], dict):
@@ -83,11 +98,12 @@ def main() -> int:
         else:
             target_ids = {str(x) for x in raw}
 
-    to_fetch = [s for s in songs if needs_enrich(s)]
     if target_ids is not None:
-        to_fetch = [s for s in to_fetch if str(s["id"]) in target_ids]
+        to_fetch = [s for s in songs if str(s["id"]) in target_ids and needs_enrich(s, force=args.force)]
+    else:
+        to_fetch = [s for s in songs if needs_enrich(s, force=args.force)]
 
-    safe_print(f"songs total={len(songs)} need_enrich={len(to_fetch)}")
+    safe_print(f"songs total={len(songs)} need_enrich={len(to_fetch)} force={args.force}")
 
     enriched = 0
     failed_batches = 0
@@ -115,12 +131,13 @@ def main() -> int:
                 song["album"] = info["albumName"]
             if info.get("albumPicUrl"):
                 song["albumPicUrl"] = info["albumPicUrl"]
+            if info.get("albumArtist"):
+                song["albumArtist"] = info["albumArtist"]
             enriched += 1
 
         safe_print(f"  batch {i // args.batch_size + 1}/{(len(to_fetch) + args.batch_size - 1) // args.batch_size} enriched={enriched}")
         time.sleep(args.delay)
 
-        # checkpoint
         manifest["enrichedAt"] = datetime.now(timezone.utc).isoformat()
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(manifest, f, ensure_ascii=False, indent=2)
