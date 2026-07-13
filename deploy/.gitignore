@@ -1,0 +1,13 @@
+# 运行时 / 大体积
+music/
+data/
+
+# 下载与批处理日志（可本地再生）
+*.log
+download-status.jsonl
+
+# 浏览器 CDP 一次性 payload（勿提交）
+scripts/cdp-c*.json
+
+# Navidrome / 本地缓存
+.cache/
