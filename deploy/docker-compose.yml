@@ -12,6 +12,9 @@ services:
       ND_SESSIONTIMEOUT: 24h
       ND_SCANSCHEDULE: "@every 15m"
       ND_ENABLEINSIGHTSCOLLECTOR: "false"
+      ND_ENABLEEXTERNALSERVICES: "true"
+      ND_COVERARTPRIORITY: "embedded,external,cover.*,folder.*,front.*"
+      ND_DEFAULTTHEME: "Tokyo Night"
     volumes:
       - /home/ubuntu/navidrome/data:/data
       - /home/ubuntu/music:/music:ro

@@ -11,6 +11,8 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tag_utils import apply_tags_from_manifest, expected_filename, sanitize_filename
+
 DEPLOY = Path(__file__).resolve().parent.parent
 LOG_PATH = DEPLOY / "download-status.jsonl"
 LIKED_DIR = DEPLOY / "music" / "liked"
@@ -22,18 +24,6 @@ def safe_print(msg: str) -> None:
         print(msg)
     except UnicodeEncodeError:
         sys.stdout.buffer.write((msg + "\n").encode("utf-8", errors="replace"))
-
-
-
-def sanitize_filename(name: str) -> str:
-    name = INVALID_CHARS.sub("_", name).strip()
-    return name[:200] if len(name) > 200 else name
-
-
-def expected_filename(song: dict) -> str:
-    artist = song.get("artist") or "Unknown"
-    title = song.get("name") or song.get("id")
-    return sanitize_filename(f"{artist} - {title}.mp3")
 
 
 def log_status(entry: dict) -> None:
@@ -64,6 +54,9 @@ def download_one(song: dict, target: str, dry_run: bool) -> str:
         "mp3",
         "--audio-quality",
         "5",
+        "--embed-thumbnail",
+        "--convert-thumbnails",
+        "jpg",
         "-o",
         tmp_pattern,
         url,
@@ -116,6 +109,11 @@ def download_one(song: dict, target: str, dry_run: bool) -> str:
     if out_path.exists():
         out_path.unlink()
     src.rename(out_path)
+
+    tag_status = apply_tags_from_manifest(out_path, song, dry_run=False)
+    if tag_status == "error":
+        safe_print(f"  [warn] tag embed failed for {out_path.name}")
+
     log_status(
         {
             "id": song["id"],
@@ -125,6 +123,7 @@ def download_one(song: dict, target: str, dry_run: bool) -> str:
             "status": "ok",
             "file": out_path.name,
             "size": size,
+            "tags": tag_status,
         }
     )
     return "ok"

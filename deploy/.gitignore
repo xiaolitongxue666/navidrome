@@ -5,6 +5,12 @@ data/
 # 下载与批处理日志（可本地再生）
 *.log
 download-status.jsonl
+embed-status.jsonl
+playlist-enriched.json
+
+# Python
+__pycache__/
+*.pyc
 
 # 浏览器 CDP 一次性 payload（勿提交）
 scripts/cdp-c*.json
