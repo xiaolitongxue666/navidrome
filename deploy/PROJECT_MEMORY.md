@@ -33,17 +33,30 @@
 - `scripts/sync-latest1000-to-vps.py`：仅清单内已有 MP3；同步前 `df -h`（<3GB 中止）。
 - **勿** `scp *.mp3` 全量、**勿** `--delete`（保留 SoundHelix 测试曲）。
 
+## 补充歌曲（非 latest1000）
+
+- **周杰伦 50 首精选**：从 Bilibili 下载 → ffmpeg 转 MP3 → 加入 `music/liked/` → scp 到 VPS ✅
+- **藤井風 2 首** (Prema, Love Like This)：从 Bilibili 下载 → 转 MP3 → 加入 → 上传 VPS ✅
+- 注：这些不是 latest1000 清单内的，属于额外加成
+
 ## 状态 (2026-07-13)
 
 - **latest1000 下载**: 全部 1000 首已尝试 ✅
   - ok/skipped: 636 首
-  - failed: 82 首（无源/VIP）
+  - failed: 82 首（无源/VIP，部分可通过 Bilibili/BBDown 补）
   - preview_only: 282 首（试听片段）
   - pending: 0
-  - 本地 MP3: 710 个 (`deploy/music/liked/`)
+  - 本地 MP3: **762** 个（含 extra 52 首，`deploy/music/liked/`）
 - **VPS 同步**: 已完成 ✅
-  - VPS `/home/ubuntu/music/liked/`: 656 首 / 5.9GB
-- **待办**: failed/preview 需 LX Music 换源补下
+  - VPS `/home/ubuntu/music/liked/`: **762** 首 / 6.6GB（含 extra 52 首）
+
+## B站/BBDown/ffmpeg 参考
+
+- **BBDown** 在 `E:/Code/my_code/Download/BBDownload/BBDownExe/BBDown.exe`
+- **多P下载**：必须用 `--multi-file-pattern "<pageNumber>-<pageTitle>"`，不要用 `<videoTitle>`（覆写）
+- **M4A转MP3**：`ffmpeg -y -i input.m4a -vn -acodec libmp3lame -b:a 192k output.mp3`
+- **整段视频（无分P）**：无法自动切歌，需手动提供时间戳
+- **合作曲命名**：Windows 不支持 `/`，用 `_` 替代 → `歌手A _ 歌手B - 歌名.mp3`
 
 ## 问题与解法
 
@@ -55,6 +68,9 @@
 | manifest ID 为 `str` 而 status ID 为 `int` | 统一转 `int` 比较 |
 | bash sync 路径乱码 | 改用 `sync-latest1000-to-vps.py` |
 | navidrome 目录 `cd` 触发 nvm v24 错误 | 用 `git -C ...` 绕过 |
+| Windows 文件名不允许 `/` | `sanitize_filename` 将 `/` 替换为 `_` |
+| BBDown 多P用错文件名模板 | 用 `<pageNumber>-<pageTitle>` 而非 `<videoTitle>` |
+| scp 含 Unicode 文件名失败 | 用 Python subprocess.run 逐个 scp |
 
 ## 约束
 
