@@ -3,6 +3,8 @@
 下载文件整理器
 ===============
 扫描 slskd 的下载目录，将已完成文件整理到 Navidrome 音乐库。
+触发扫描前，曲库文件应为 MP3 且已写 ID3/APIC
+（DoubleDouble 请先跑 import_album_zip.py；或用 deploy 的 embed-tags-covers.py）。
 
 用法: python3 organizer.py                  # 整理所有已完成文件
       python3 organizer.py --dry-run        # 预览，不实际移动
@@ -147,23 +149,88 @@ def organize_file(src_path, filename, dry_run=False):
 
 
 def trigger_navidrome_scan():
-    """通过 Navidrome API 触发扫描。"""
+    """通过 Navidrome Subsonic API startScan 触发扫描。"""
+    print("\n  触发 Navidrome 扫描...")
+
+    user, password = _load_navidrome_credentials()
+    if not user or not password:
+        print("  ⚠ 未设置 ND_USER/ND_PASS（或 NAVIDROME_USER/PASS）")
+        print("    将等待 Navidrome 定时扫描（本地通常 @every 1m）")
+        return False
+
+    base = NAVIDROME_URL.rstrip("/")
+    prefix = (NAVIDROME_BASEURL or "").rstrip("/")
+    url = f"{base}{prefix}/rest/startScan"
+    params = {
+        "u": user,
+        "p": password,
+        "v": "1.16.0",
+        "c": "music-downloader",
+        "f": "json",
+    }
     try:
-        # Navidrome Subsonic API: 需要认证
-        # 先用简单的重启扫描方式
-        print("\n  触发 Navidrome 扫描...")
-
-        # 方式1: 通过修改音乐目录的 mtime 触发扫描（Navidrome 会检测变化）
-        # 实际上 Navidrome 有 SCANSCHEDULE: @every 15m，会自动扫描
-
-        # 方式2: 尝试调用 Navidrome 的内部 API
-        # Navidrome 没有公开的扫描触发 API，等待定时扫描即可
-
-        print(f"  已安排扫描（Navidrome 每 15 分钟自动扫描）")
-        return True
+        resp = requests.get(url, params=params, timeout=15)
+        data = resp.json() if resp.content else {}
+        status = (
+            data.get("subsonic-response", {}).get("status")
+            if isinstance(data, dict)
+            else None
+        )
+        if resp.status_code == 200 and status == "ok":
+            print("  ✓ 已触发 startScan")
+            return True
+        print(f"  ⚠ startScan 失败: HTTP {resp.status_code} status={status}")
+        print(f"    body={resp.text[:300]}")
+        print("    将等待 Navidrome 定时扫描")
+        return False
     except Exception as e:
         print(f"  ⚠ 触发扫描失败: {e}")
+        print("    将等待 Navidrome 定时扫描")
         return False
+
+
+def _load_navidrome_credentials():
+    """从环境变量或 deploy/data/.admin-credentials 读取账号。"""
+    from config import NAVIDROME_USER, NAVIDROME_PASS
+
+    user = (NAVIDROME_USER or "").strip()
+    password = (NAVIDROME_PASS or "").strip()
+    if user and password:
+        return user, password
+
+    # 可选：deploy/data/.admin-credentials 格式 user:pass 或 JSON
+    candidates = [
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..", "..", "deploy", "data", ".admin-credentials",
+        ),
+        os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            "..", "..", "deploy", ".admin-credentials",
+        ),
+    ]
+    for path in candidates:
+        path = os.path.normpath(path)
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                raw = f.read().strip()
+            if not raw:
+                continue
+            if raw.startswith("{"):
+                obj = json.loads(raw)
+                u = (obj.get("user") or obj.get("username") or "").strip()
+                p = (obj.get("pass") or obj.get("password") or "").strip()
+                if u and p:
+                    return u, p
+            elif ":" in raw:
+                u, p = raw.split(":", 1)
+                if u.strip() and p.strip():
+                    return u.strip(), p.strip()
+        except Exception:
+            continue
+    return "", ""
 
 
 def main():

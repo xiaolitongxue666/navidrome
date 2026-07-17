@@ -79,14 +79,20 @@ fi
 echo ""
 echo "[3/3] 从 Navidrome 音乐库清理..."
 if [ "$FORCE" = true ]; then
-    MUSIC_DIR="/home/ubuntu/music/周杰伦"
-    if [ -d "$MUSIC_DIR" ]; then
-        SIZE=$(du -sh "$MUSIC_DIR" 2>/dev/null | cut -f1)
-        echo "  删除 $MUSIC_DIR ($SIZE)..."
-        rm -rf "$MUSIC_DIR"
+    # 与 config.py 一致：MUSIC_DIR 环境变量，否则仓库 deploy/music
+    if [ -n "${MUSIC_DIR:-}" ]; then
+        ARTIST_DIR="$MUSIC_DIR/周杰伦"
+    else
+        REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+        ARTIST_DIR="$REPO_ROOT/deploy/music/周杰伦"
+    fi
+    if [ -d "$ARTIST_DIR" ]; then
+        SIZE=$(du -sh "$ARTIST_DIR" 2>/dev/null | cut -f1)
+        echo "  删除 $ARTIST_DIR ($SIZE)..."
+        rm -rf "$ARTIST_DIR"
         echo "  ✓ 已从 Navidrome 音乐库删除"
     else
-        echo "  - 没有周杰伦目录"
+        echo "  - 没有周杰伦目录 ($ARTIST_DIR)"
     fi
 else
     echo "  跳过（使用 --force 同时清理音乐库）"

@@ -26,6 +26,7 @@ music.old
 docker-compose.yml
 !contrib/docker-compose.yml
 !deploy/docker-compose.yml
+!tools/music-downloader/docker-compose.yml
 binaries
 navidrome-*
 /ndpgen
@@ -44,5 +45,12 @@ go.work*
 
 # music-downloader
 tools/music-downloader/downloads/
+tools/music-downloader/_rt_test/
+tools/music-downloader/_dd_test/
+tools/music-downloader/**/*.flac
+tools/music-downloader/PROBE_NOTES.md
 tools/music-downloader/**/__pycache__/
 tools/music-downloader/**/*.pyc
+
+# project memory backups (summary-project-memory)
+.project-memory-backups/

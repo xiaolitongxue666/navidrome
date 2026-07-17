@@ -12,7 +12,15 @@
 
 VPS `docker-compose.yml` 已配置 `ND_DEFAULTTHEME: "Tokyo Night"`。新浏览器首次登录默认使用该主题；若仍显示 Dark，请在 **个人设置 → 主题** 手动选择 **Tokyo Night**（localStorage 会覆盖服务器默认）。
 
-## 网易云「我喜欢的音乐」迁移
+## 新曲获取（现行）
+
+**禁止从网易云下载音频。** 渠道与入库流程见 [AGENTS.md](AGENTS.md)、[PROJECT_MEMORY.md](PROJECT_MEMORY.md) 与 [`tools/music-downloader/README.md`](../tools/music-downloader/README.md)。
+
+- **主**：DoubleDouble 整专 zip → `import_album_zip.py`
+- **兜底**：Soulseek（`tools/music-downloader`）
+- 网易云 API **仅**用于元数据/封面 enrichment（下方脚本）
+
+## 网易云「我喜欢的音乐」迁移（历史清单 / 元数据）
 
 | 层级 | 范围 | 清单文件 |
 |------|------|----------|
@@ -32,25 +40,11 @@ python deploy/scripts/build-latest1000.py
 python deploy/scripts/enrich-manifest.py
 ```
 
-从网易云 `song/detail` API 补全 `albumName`、`albumPicUrl`，输出 `playlist-enriched.json`。
+从网易云 `song/detail` API 补全 `albumName`、`albumPicUrl`，输出 `playlist-enriched.json`（**不下载音轨**）。
 
-### 3. 下载（yt-dlp 批量，可续传）
+### 3. 下载（已禁用网易云媒体）
 
-下载目录：`deploy/music/liked/`（文件名 `歌手 - 歌曲名.mp3`）
-
-新下载会自动 `--embed-thumbnail` 并从 manifest 写入 UTF-8 ID3 + 封面（需 `mutagen`）。
-
-```bash
-pip install mutagen   # 或 C:\Python313\python.exe -m pip install mutagen
-
-# 单批（50 首）
-python deploy/scripts/download-batch.py --manifest deploy/playlist-latest1000.json --batch-size 50 --batch 0
-
-# latest1000 全部 20 批
-python deploy/scripts/download-all-batches.py --manifest deploy/playlist-latest1000.json --batch-size 50
-```
-
-日志：`deploy/download-status.jsonl`
+`download-batch.py` / yt-dlp 指向 music.163.com **禁止使用**。新曲请走 DoubleDouble / Soulseek（见上）。历史 `liked/` 文件可继续用下方脚本补标签。
 
 ### 4. 批量修复已有 MP3 标签与封面
 
