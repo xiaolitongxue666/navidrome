@@ -41,3 +41,8 @@ openspec/
 .agents
 go.work*
 .worktrees/
+
+# music-downloader
+tools/music-downloader/downloads/
+tools/music-downloader/**/__pycache__/
+tools/music-downloader/**/*.pyc

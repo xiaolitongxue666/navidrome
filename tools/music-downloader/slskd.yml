@@ -1,0 +1,33 @@
+# slskd 配置
+# Soulseek P2P 网络客户端
+soulseek:
+  # 注册一个新账号（首次运行会自动注册）
+  username: jaychou_fan_2024
+  password: Music4Ever!
+  description: "slskd on VPS - music-downloader"
+  listen_port: 50300
+  diagnostic_level: Info
+
+web:
+  port: 5030
+  ip_address: 0.0.0.0
+  url_base: /
+  authentication:
+    disabled: true
+
+directories:
+  downloads: /app/downloads
+  incomplete: /app/downloads/incomplete
+
+retention:
+  search: 10080         # 搜索结果保留 7 天
+  files:
+    complete: 20160      # 已完成文件记录保留 14 天
+
+transfers:
+  download:
+    slots: 5             # 同时下载数
+    speed_limit: 1000    # 速度限制 (KiB/s)，0 = 不限
+
+feature:
+  swagger: true
