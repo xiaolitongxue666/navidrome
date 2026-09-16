@@ -20,6 +20,21 @@
 - Python 3 + `requests`（`pip install -r requirements.txt`）
 - `ffmpeg`（DoubleDouble FLAC/M4A → MP3）
 
+## 路径与 Python
+
+| 场景 | `MUSIC_DIR` | 解释器 |
+|------|-------------|--------|
+| 本机（仓内） | 默认 `../../deploy/music`（`config.py`） | macOS/Linux：`python3`；Windows：`PYTHONIOENCODING=utf-8 C:/Python313/python.exe` |
+| VPS | `/home/ubuntu/music` | `python3` |
+
+覆盖：`MUSIC_DIR`、`SLSKD_API`（默认 `http://127.0.0.1:5030/api/v0`）、`NAVIDROME_URL`、`NAVIDROME_BASEURL`。
+
+```bash
+python3 downloader.py --help
+python3 import_album_zip.py --help
+python3 organizer.py --help
+```
+
 ## DoubleDouble 导入（主路径）
 
 1. 在 [us.doubledouble.top](https://us.doubledouble.top/) 粘贴 Qobuz 专辑 URL，或用 iTunes 搜索专辑后下载。
