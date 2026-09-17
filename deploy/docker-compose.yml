@@ -16,5 +16,5 @@ services:
       ND_COVERARTPRIORITY: "embedded,external,cover.*,folder.*,front.*"
       ND_DEFAULTTHEME: "Tokyo Night"
     volumes:
-      - /home/ubuntu/navidrome/data:/data
-      - /home/ubuntu/music:/music:ro
+      - ${NAVIDROME_DATA:-/home/ubuntu/navidrome/data}:/data
+      - ${NAVIDROME_MUSIC:-/home/ubuntu/music}:/music:ro

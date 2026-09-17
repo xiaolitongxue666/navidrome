@@ -4,7 +4,7 @@
 
 ## 架构与策略
 
-1. VPS：Navidrome `127.0.0.1:4533`，`ND_BASEURL=/music`，曲库 `/home/ubuntu/music/liked/`；compose 在 `/home/ubuntu/Code/Go/navidrome/deploy/`。
+1. VPS：Navidrome `127.0.0.1:4533`，`ND_BASEURL=/music`，镜像 `deluan/navidrome:0.64.0`（升前备份 `/home/ubuntu/navidrome`）。卷 `${NAVIDROME_DATA}` / `${NAVIDROME_MUSIC}`，默认 `/home/ubuntu/navidrome/data` 与 `/home/ubuntu/music`。本机 `Code/VPS/navidrome`；生产 compose `/home/ubuntu/Code/Go/navidrome/deploy/`。
 2. Nginx：`music.conf.tpl` 反代 `/music/` → `:4533`。
 3. 本地全量 **7269** 首；VPS 当前 **762** MP3（含 ~50 首 B 站 extra，不在网易云歌单）。
 4. Navidrome **按 ID3 元数据分组专辑**（`TALB`+`TPE2`+`AlbumID`），不按文件夹；禁止 `TCMP=1` 合集标记。
@@ -89,4 +89,4 @@
 - 同步勿 `--delete`（保留 SoundHelix）。
 - 勿提交：`music/`、`data/`、`*-status.jsonl`、`playlist-enriched.json`、报告/日志、`_rt_test/`/`_dd_test/`、临时 FLAC、Downloads 专辑 zip。
 
-_更新：2026-07-17_
+_更新：2026-09-17_

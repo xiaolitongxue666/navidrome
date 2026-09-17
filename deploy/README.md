@@ -8,7 +8,7 @@
 | 环境 | 地址 | 说明 |
 |------|------|------|
 | 本地测试 | http://localhost:4533 | `docker compose -f docker-compose.local.yml up -d` |
-| VPS 生产 | https://xiaolitongxue.com.cn/music/ | Nginx 子路径反代，仅 127.0.0.1:4533 |
+| VPS 生产 | https://xiaolitongxue.com.cn/music/ | Nginx 子路径反代，仅 127.0.0.1:4533；镜像 `deluan/navidrome:0.64.0`（升前备份 `/home/ubuntu/navidrome`，ID 迁移单向） |
 | Subsonic 客户端 | `https://xiaolitongxue.com.cn/music` | 管理员凭据见 VPS `/home/ubuntu/navidrome/.admin-credentials` |
 
 ### UI 主题

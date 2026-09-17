@@ -54,3 +54,6 @@ tools/music-downloader/**/*.pyc
 
 # project memory backups (summary-project-memory)
 .project-memory-backups/
+
+.codegraph/
+undefined/
