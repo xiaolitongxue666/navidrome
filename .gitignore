@@ -57,3 +57,4 @@ tools/music-downloader/**/*.pyc
 
 .codegraph/
 undefined/
+.local/
