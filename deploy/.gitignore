@@ -20,6 +20,10 @@ scripts/cdp-c*.json
 
 # Navidrome / 本地缓存
 .cache/
+.admin-credentials
+*.admin-credentials
+.env
+*.env
 
 # 项目记忆备份
 .project-memory-backups/

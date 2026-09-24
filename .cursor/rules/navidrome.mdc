@@ -1,0 +1,10 @@
+---
+description: Navidrome 部署钉 0.64.0
+alwaysApply: true
+---
+
+生产路径 `/home/ubuntu/Code/VPS/navidrome`。数据 `~/navidrome`，媒体 `~/music`。部署：`cd deploy && COMPOSE_IGNORE_ORPHANS=true docker compose up -d --no-build`。
+
+只钉 `deluan/navidrome:0.64.0`。升官方新 tag 前先复制 `~/navidrome`。勿提交 `.admin-credentials`、`playlist-*.json`、`music/`。
+
+细节：[deploy/AGENTS.md](../../deploy/AGENTS.md)
