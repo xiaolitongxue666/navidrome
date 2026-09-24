@@ -1,6 +1,6 @@
 # 本地音乐工作流
 
-镜像 `deluan/navidrome:0.64.0`。0.64 会做 **单向** 数据库 ID 迁移：升级前停服务并备份 `navidrome.db`；无法降级除非还原备份。客户端缓存的曲目 ID 可能要重同步。本次战役不部署生产。
+镜像 `deluan/navidrome:0.64.0`。0.64 会做 **单向** 数据库 ID 迁移：升级前停服务并备份 `navidrome.db`；无法降级除非还原备份。客户端缓存的曲目 ID 可能要重同步。生产在 `/home/ubuntu/Code/VPS/navidrome/deploy`。
 
 
 ## 已完成部署（2026-07-13）
