@@ -2,6 +2,24 @@
 
 会话优先读 [PROJECT_MEMORY.md](PROJECT_MEMORY.md) 与 [README.md](README.md)。
 
+## 生产路径
+
+`/home/ubuntu/Code/VPS/navidrome`；数据 `/home/ubuntu/navidrome`；媒体 `/home/ubuntu/music`。
+
+## 部署（生产唯一入口）
+
+```bash
+cd deploy
+COMPOSE_IGNORE_ORPHANS=true docker compose up -d --no-build
+# 只钉 deluan/navidrome:0.64.0。升到更新官方 tag 前先复制 ~/navidrome（单向 ID 迁移）
+# 回滚：上一 tag + 数据副本；不要 bootstrap
+```
+
+## 测试
+
+- **single**：`docker compose -f deploy/docker-compose.yml config` + `curl --noproxy '*' http://127.0.0.1:4533/ping`
+- **related**：生产 `/music/`（要 vps_nginx；无 mihomo 前置）
+
 ## 硬约束：获取音频
 
 下载或迁移音频时**必须**同时保证元数据与封面，否则 Navidrome 会出现乱码、无专辑图。

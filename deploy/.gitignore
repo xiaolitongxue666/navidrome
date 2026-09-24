@@ -9,6 +9,7 @@ embed-status.jsonl
 audit-tags-report.json
 sync-liked-all.log
 playlist-enriched.json
+playlist-*.json
 
 # Python
 __pycache__/
