@@ -1,6 +1,6 @@
 # 本地音乐工作流
 
-镜像 `deluan/navidrome:0.64.0`。0.64 会做 **单向** 数据库 ID 迁移：升级前停服务并备份 `navidrome.db`；无法降级除非还原备份。客户端缓存的曲目 ID 可能要重同步。生产在 `/home/ubuntu/Code/VPS/navidrome/deploy`。
+镜像 `deluan/navidrome:0.64.2`。0.64 会做 **单向** 数据库 ID 迁移：升级前停服务并备份 `navidrome.db`；无法降级除非还原备份。客户端缓存的曲目 ID 可能要重同步。生产在 `/home/ubuntu/Code/VPS/navidrome/deploy`。
 
 
 ## 已完成部署（2026-07-13）
@@ -8,7 +8,7 @@
 | 环境 | 地址 | 说明 |
 |------|------|------|
 | 本地测试 | http://localhost:4533 | `docker compose -f docker-compose.local.yml up -d` |
-| VPS 生产 | https://xiaolitongxue.com.cn/music/ | Nginx 子路径反代，仅 127.0.0.1:4533；镜像 `deluan/navidrome:0.64.0`（升前备份 `/home/ubuntu/navidrome`，ID 迁移单向） |
+| VPS 生产 | https://xiaolitongxue.com.cn/music/ | Nginx 子路径反代，仅 127.0.0.1:4533；镜像 `deluan/navidrome:0.64.2`（升前备份 `/home/ubuntu/navidrome`，ID 迁移单向） |
 | Subsonic 客户端 | `https://xiaolitongxue.com.cn/music` | 管理员凭据见 VPS `/home/ubuntu/navidrome/.admin-credentials` |
 
 ### UI 主题

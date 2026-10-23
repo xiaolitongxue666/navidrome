@@ -11,7 +11,7 @@
 ```bash
 cd deploy
 COMPOSE_IGNORE_ORPHANS=true docker compose up -d --no-build
-# 只钉 deluan/navidrome:0.64.0。升到更新官方 tag 前先复制 ~/navidrome（单向 ID 迁移）
+# 只钉 deluan/navidrome:0.64.2。升到更新官方 tag 前先复制 ~/navidrome（单向 ID 迁移）
 # 回滚：上一 tag + 数据副本；不要 bootstrap
 ```
 
